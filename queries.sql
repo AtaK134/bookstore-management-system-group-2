@@ -1,0 +1,50 @@
+-- =========================================================
+-- Kitapçı Veritabanı - Rapor Sorguları
+-- =========================================================
+
+-- ---------------------------------------------------------
+-- Sorgu 1 (JOIN)
+-- Satış fişi: müşteri adı, kitap başlığı, adet ve satır tutarı
+-- sale -> sale_item -> book ve sale -> customer bağlantıları
+-- ---------------------------------------------------------
+SELECT
+    s.sale_id,
+    s.sale_date,
+    c.first_name || ' ' || c.last_name   AS customer_name,
+    b.title                              AS book_title,
+    si.quantity,
+    si.unit_price,
+    si.quantity * si.unit_price          AS line_total
+FROM sale s
+JOIN customer  c  ON c.customer_id = s.customer_id
+JOIN sale_item si ON si.sale_id    = s.sale_id
+JOIN book      b  ON b.book_id     = si.book_id
+ORDER BY s.sale_id, b.title;
+
+
+-- ---------------------------------------------------------
+-- Sorgu 2 (GROUP BY + ORDER BY)
+-- Her kitaptan toplam kaç adet satıldı? En çok satılandan başla.
+-- LEFT JOIN sayesinde hiç satılmamış kitaplar da 0 ile listelenir.
+-- ---------------------------------------------------------
+SELECT
+    b.book_id,
+    b.title,
+    COALESCE(SUM(si.quantity), 0) AS total_sold
+FROM book b
+LEFT JOIN sale_item si ON si.book_id = b.book_id
+GROUP BY b.book_id, b.title
+ORDER BY total_sold DESC, b.title;
+
+
+-- ---------------------------------------------------------
+-- Sorgu 3 (Alt sorgu)
+-- Güncel fiyatı tüm kitapların ortalama fiyatından yüksek olan kitaplar
+-- ---------------------------------------------------------
+SELECT
+    b.title,
+    b.price,
+    ROUND((SELECT AVG(price) FROM book), 2) AS average_price
+FROM book b
+WHERE b.price > (SELECT AVG(price) FROM book)
+ORDER BY b.price DESC;
