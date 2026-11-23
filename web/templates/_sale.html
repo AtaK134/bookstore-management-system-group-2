@@ -1,0 +1,18 @@
+<section class="card sale">
+  <div class="sale-head">
+    <strong>Order #{{ s.sale_id }}</strong>
+    <span class="muted">{{ s.sale_date.strftime('%d.%m.%Y %H:%M') }}</span>
+    {% if show_customer %}<span>{{ s.customer_name }}</span>{% endif %}
+    <strong class="price">{{ s.total|money }}</strong>
+  </div>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Book</th><th class="num">Quantity</th><th class="num">Unit price</th><th class="num">Line total</th></tr></thead>
+    <tbody>
+    {% for i in s.lines %}
+      <tr><td>{{ i.title }}</td><td class="num">{{ i.quantity }}</td><td class="num">{{ i.unit_price|money }}</td><td class="num">{{ i.line_total|money }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>

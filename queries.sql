@@ -1,11 +1,11 @@
 -- =========================================================
--- Kitapçı Veritabanı - Rapor Sorguları
+-- Bookstore Database - Report Queries
 -- =========================================================
 
 -- ---------------------------------------------------------
--- Sorgu 1 (JOIN)
--- Satış fişi: müşteri adı, kitap başlığı, adet ve satır tutarı
--- sale -> sale_item -> book ve sale -> customer bağlantıları
+-- Query 1 (JOIN)
+-- Sales receipt: customer name, book title, quantity and line total.
+-- Follows sale -> sale_item -> book and sale -> customer.
 -- ---------------------------------------------------------
 SELECT
     s.sale_id,
@@ -23,9 +23,9 @@ ORDER BY s.sale_id, b.title;
 
 
 -- ---------------------------------------------------------
--- Sorgu 2 (GROUP BY + ORDER BY)
--- Her kitaptan toplam kaç adet satıldı? En çok satılandan başla.
--- LEFT JOIN sayesinde hiç satılmamış kitaplar da 0 ile listelenir.
+-- Query 2 (GROUP BY + ORDER BY)
+-- Total number of copies sold for each book, best seller first.
+-- LEFT JOIN keeps books that were never sold (total_sold = 0).
 -- ---------------------------------------------------------
 SELECT
     b.book_id,
@@ -38,8 +38,8 @@ ORDER BY total_sold DESC, b.title;
 
 
 -- ---------------------------------------------------------
--- Sorgu 3 (Alt sorgu)
--- Güncel fiyatı tüm kitapların ortalama fiyatından yüksek olan kitaplar
+-- Query 3 (Subquery)
+-- Books whose current price is higher than the average price of all books.
 -- ---------------------------------------------------------
 SELECT
     b.title,

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Add book' if is_new else 'Edit book' }}{% endblock %}
+{% block content %}
+<div class="card form-card">
+  <h1>{{ 'Add book' if is_new else 'Edit book' }}</h1>
+  <form method="post">
+    {{ csrf_field() }}
+    <div class="grid-2">
+      <label>ISBN * <input name="isbn" value="{{ book.isbn or '' }}" required maxlength="17"></label>
+      <label>Publication year <input name="publication_year" type="number" min="1000" max="2100" value="{{ book.publication_year or '' }}"></label>
+    </div>
+    <label>Title * <input name="title" value="{{ book.title or '' }}" required maxlength="200"></label>
+    <div class="grid-2">
+      <label>Current price (₺) * <input name="price" type="number" step="0.01" min="0" value="{{ book.price if book.price is not none else '' }}" required></label>
+      <label>Stock * <input name="stock" type="number" min="0" value="{{ book.stock if book.stock is not none else 0 }}" required></label>
+    </div>
+    <div class="grid-2">
+      <label>Publisher *
+        <select name="publisher_id" required>
+          {% for p in publishers %}
+            <option value="{{ p.publisher_id }}" {% if p.publisher_id|string == book.publisher_id|string %}selected{% endif %}>{{ p.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Category *
+        <select name="category_id" required>
+          {% for c in categories %}
+            <option value="{{ c.category_id }}" {% if c.category_id|string == book.category_id|string %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+    <fieldset>
+      <legend>Authors * (select one or more)</legend>
+      <div class="checks">
+        {% for a in authors %}
+          <label class="check"><input type="checkbox" name="author_ids" value="{{ a.author_id }}" {% if a.author_id in selected %}checked{% endif %}> {{ a.name }}</label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <div class="actions">
+      <a class="btn btn-ghost" href="{{ url_for('admin_books') }}">Cancel</a>
+      <button class="btn">Save</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

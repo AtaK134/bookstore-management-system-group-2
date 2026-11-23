@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h1>Report queries</h1>
+<p class="muted">The three queries from <code>queries.sql</code>, run live against the database.</p>
+{% for r in results %}
+<section class="card report">
+  <h2>{{ r.title }}</h2>
+  <pre><code>{{ r.sql }}</code></pre>
+  <div class="table-wrap">
+  <table>
+    <thead><tr>{% for c in r.columns %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+    <tbody>
+    {% for row in r.rows %}
+      <tr>{% for c in r.columns %}<td>{{ row[c] }}</td>{% endfor %}</tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  <p class="muted small">{{ r.rows|length }} rows</p>
+</section>
+{% endfor %}
+{% endblock %}

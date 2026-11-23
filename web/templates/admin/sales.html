@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Sales{% endblock %}
+{% block content %}
+<h1>All sales</h1>
+{% if not sales %}<p class="muted">No sales yet.</p>{% endif %}
+{% for s in sales %}
+  {% include "_sale.html" %}
+  <form method="post" action="{{ url_for('admin_sale_delete', sale_id=s.sale_id) }}" class="sale-action"
+        onsubmit="return confirm('Delete sale #{{ s.sale_id }}? The books go back to stock.');">
+    {{ csrf_field() }}
+    <button class="btn btn-small btn-danger">Delete sale</button>
+  </form>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Cart{% endblock %}
+{% block content %}
+<h1>Your cart</h1>
+{% if not items %}
+  <p class="muted">Your cart is empty. <a href="{{ url_for('catalog') }}">Browse books</a>.</p>
+{% else %}
+<form method="post" action="{{ url_for('cart_update') }}">
+  {{ csrf_field() }}
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Book</th><th class="num">Price</th><th class="num">Quantity</th><th class="num">Line total</th><th></th></tr></thead>
+    <tbody>
+    {% for i in items %}
+      <tr>
+        <td>{{ i.title }}{% if i.quantity > i.stock %}<br><span class="error-text">Only {{ i.stock }} left</span>{% endif %}</td>
+        <td class="num">{{ i.price|money }}</td>
+        <td class="num"><input type="number" name="qty_{{ i.book_id }}" value="{{ i.quantity }}" min="0" max="{{ i.stock }}" class="qty"></td>
+        <td class="num">{{ i.line_total|money }}</td>
+        <td><button class="btn btn-small btn-ghost" formaction="{{ url_for('cart_remove', book_id=i.book_id) }}">Remove</button></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot><tr><th colspan="3" class="num">Total</th><th class="num">{{ total|money }}</th><th></th></tr></tfoot>
+  </table>
+  </div>
+  <div class="actions">
+    <button class="btn btn-ghost">Update quantities</button>
+    <button class="btn" formaction="{{ url_for('checkout') }}">Place order</button>
+  </div>
+</form>
+{% endif %}
+{% endblock %}

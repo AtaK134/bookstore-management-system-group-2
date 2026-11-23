@@ -1,5 +1,5 @@
--- setup.ps1 tarafindan postgres (superuser) ile calistirilir.
--- Degiskenler: db_name, db_user, db_password (.env dosyasindan gelir)
+-- Run by setup.ps1 as the postgres superuser (local install without Docker).
+-- Variables: db_name, db_user, db_password (taken from .env)
 
 SELECT format('CREATE ROLE %I LOGIN PASSWORD %L', :'db_user', :'db_password')
 WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'db_user') \gexec

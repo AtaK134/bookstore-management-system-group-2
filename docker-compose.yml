@@ -1,32 +1,49 @@
-# Bookstore PostgreSQL (Docker)
-# Başlat:   docker compose up -d
-# Durdur:   docker compose down
-# Sıfırla:  docker compose down -v   (veriyi siler; tekrar up dendiğinde schema.sql + data.sql yeniden çalışır)
+# Bookstore - PostgreSQL database + Flask web application
 #
-# Bilgiler .env dosyasından okunur. Bilgisayarda kurulu PostgreSQL 5432'yi kullandığı
-# için konteyner varsayılan olarak 5434 portundan açılır (DOCKER_DB_PORT).
+#   Start:   docker compose up            (add -d to run in the background)
+#   Stop:    docker compose down
+#   Reset:   docker compose down -v       (deletes the data; schema.sql + data.sql run again on next start)
+#
+# Works right after cloning: every setting has a default below. To override a
+# value, create a .env file next to this file (see .env.example).
 
 services:
   db:
     image: postgres:18
-    container_name: bookstore-db
-    restart: "no"   # otomatik başlamaz; sadece "docker compose up -d" ile açılır
+    restart: "no"   # does not start by itself; only with "docker compose up"
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-bookstore}
+      POSTGRES_USER: ${DB_USER:-bookstore_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-bookstore_pass}
     ports:
-      - "${DOCKER_DB_PORT:-5434}:5432"
+      - "${DOCKER_DB_PORT:-5434}:5432"   # for DBeaver: localhost:5434
     volumes:
       - bookstore_data:/var/lib/postgresql
-      # Veritabanı ilk kez oluşturulurken alfabetik sırayla çalışır
+      # Run in alphabetical order the first time the database is created
       - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      # TCP check: only succeeds after the init scripts have finished
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
+
+  web:
+    build: ./web
+    restart: "no"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-bookstore}
+      DB_USER: ${DB_USER:-bookstore_user}
+      DB_PASSWORD: ${DB_PASSWORD:-bookstore_pass}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+    ports:
+      - "${WEB_PORT:-8080}:8000"         # open http://localhost:8080
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   bookstore_data:

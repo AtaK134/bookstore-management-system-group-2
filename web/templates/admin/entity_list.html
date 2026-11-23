@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ cfg.plural }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ cfg.plural }}</h1>
+  <a class="btn" href="{{ url_for('admin_entity_new', entity=entity) }}">Add {{ cfg.label|lower }}</a>
+</div>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>ID</th>{% for f in cfg.fields %}<th>{{ f[1] }}</th>{% endfor %}<th></th></tr>
+  </thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td>{{ r.id }}</td>
+      {% for f in cfg.fields %}<td>{{ r[f[0]] or '' }}</td>{% endfor %}
+      <td class="row-actions">
+        <a class="btn btn-small btn-ghost" href="{{ url_for('admin_entity_edit', entity=entity, item_id=r.id) }}">Edit</a>
+        <form method="post" action="{{ url_for('admin_entity_delete', entity=entity, item_id=r.id) }}" class="inline"
+              onsubmit="return confirm('Delete this {{ cfg.label|lower }}?');">
+          {{ csrf_field() }}
+          <button class="btn btn-small btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="{{ cfg.fields|length + 2 }}" class="muted">No records.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}
