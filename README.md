@@ -9,8 +9,8 @@ that has login, two roles and insert / update / delete operations.
 Requirements: [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine with the compose plugin).
 
 ```bash
-git clone <repository-url>
-cd <repository-folder>
+git clone https://github.com/AtaK134/bookstore-management-system-group-2.git
+cd bookstore-management-system-group-2
 docker compose up
 ```
 
@@ -107,7 +107,7 @@ them, run `docker compose down -v` and then `docker compose up` again.
    ```
 4. Clone the project and create a `.env` with production values:
    ```bash
-   git clone <repository-url> bookstore && cd bookstore
+   git clone https://github.com/AtaK134/bookstore-management-system-group-2.git bookstore && cd bookstore
    cat > .env <<EOF
    WEB_PORT=80
    DB_PASSWORD=$(openssl rand -hex 16)
